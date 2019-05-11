@@ -20,6 +20,7 @@ public class Bruteforce {
 			Map<List<Item>, Integer> map = new HashMap<>();
 			final int KNAPSACKSIZE = Utilities.getKnapsackSize(filepath);
 			final List<Item> ITEMS = Utilities.getItemsList(filepath);
+			long start = System.currentTimeMillis();
 			for (int i = 0; i < Math.pow(2, ITEMS.size()); i++) {
 				int[] characteristicVector = getCharVector(ITEMS, i);
 				List<Item> currentItems = extractItems(characteristicVector, ITEMS);
@@ -27,7 +28,7 @@ public class Bruteforce {
 					int sum = getSumOfValues(currentItems);
 					map.put(currentItems, sum);
 
-					System.out.println(currentItems);
+				//System.out.println(currentItems);
 				}
 			}
 			int maxSum = getMaxSum(map.values());
@@ -38,8 +39,8 @@ public class Bruteforce {
 				System.out.println(Arrays.toString(transformBack(list, ITEMS.size())));
 				System.out.println(list + "  <---------BEST OPTION");
 			}
-
-			
+			long finish = System.currentTimeMillis();
+			System.out.println("DONE in " + (finish - start) + " miliseconds");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
