@@ -8,7 +8,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		Bruteforce SMOrc = new Bruteforce();
-		SMOrc.classify("1");
+		SMOrc.classify("7");
 //		long start = System.currentTimeMillis();
 //		System.out.println(Arrays.toString(getCH(100000)));
 //		long finish = System.currentTimeMillis();
