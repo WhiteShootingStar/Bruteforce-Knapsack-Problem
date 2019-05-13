@@ -14,22 +14,28 @@ import items.Item;
 import utils.Utilities;
 
 public class Bruteforce {
+	private int arSize;
+	private int KNAPSACKSIZE;
+	private List<Item> ITEMS;
 
 	public void classify(String filepath) {
 		try {
-			
-			final int KNAPSACKSIZE = Utilities.getKnapsackSize(filepath);
-			final List<Item> ITEMS = Utilities.getItemsList(filepath);
+
+			KNAPSACKSIZE = Utilities.getKnapsackSize(filepath);
+			 ITEMS = Utilities.getItemsList(filepath);
+			arSize = ITEMS.size();
 			long start = System.currentTimeMillis();
 			List<Item> solution = null;
 			int bestSum = -1;
-			for (int i = 0; i < Math.pow(2, ITEMS.size()-1); i++) {
-				int[] characteristicVector = getCharVector(ITEMS, i);
-				List<Item> currentItems = extractItems(characteristicVector, ITEMS);
-				if (solution == null && doesntExceedCapacityItems(KNAPSACKSIZE, currentItems)) {
+			for (int i = 0; i < Math.pow(2, ITEMS.size()); i++) {
+				int[] characteristicVector = getCharVector(i);
+				List<Item> currentItems = extractItems(characteristicVector);
+				// String characteristicVector = getCharVectorNEW(i);
+				// List<Item> currentItems = extractItemsString(characteristicVector, ITEMS);
+				if (solution == null && doesntExceedCapacityItems(currentItems)) {
 					solution = currentItems;
 					bestSum = getSumOfValues(solution);
-				} else if (doesntExceedCapacityItems(KNAPSACKSIZE, currentItems)) {
+				} else if (doesntExceedCapacityItems(currentItems)) {
 
 					int sum = getSumOfValues(currentItems);
 					if (sum > bestSum) {
@@ -37,9 +43,8 @@ public class Bruteforce {
 						bestSum = sum;
 					}
 
-					
 				}
-				System.out.println(i);
+				// System.out.println(i);
 			}
 
 			System.out.println(getSumOfValues(solution) + " <----------- VALUES");
@@ -55,30 +60,37 @@ public class Bruteforce {
 		}
 	}
 
-	private int[] getCharVector(List<Item> list, int number) {
-		int[] vector = new int[list.size()];
-		int temp = number;
+	private int[] getCharVector(int number) {
+		int[] vector = new int[arSize];
 
 		for (int j = vector.length - 1; j >= 0; j--) {
-			vector[j] = temp % 2;
-			temp = temp / 2;
+			vector[j] = number % 2;
+			number = number / 2;
 		}
 		return vector;
 	}
 
-	private int[] getCharVectorNEW(List<Item> list, int number) {
-		int[] vector = new int[list.size()];
-		int temp = number;
-		String[] val = Integer.toBinaryString(temp).split("");
-		for (int i = val.length - 1; i >= 0; i--) {
-			vector[i] = Integer.parseInt(val[i]);
+	private String getCharVectorNEW(int number) {
+		String output = Integer.toBinaryString(number);
+		int howMuch = arSize - output.length();
+
+		String outcome = "";
+		for (int i = 0; i < howMuch; i++) {
+			output += "0";
 		}
-		return vector;
+		return outcome + output;
 	}
 
-	private List<Item> extractItems(int[] vector, List<Item> list) {
+	private List<Item> extractItems(int[] vector) {
+	
+		return ITEMS.stream().filter(e -> vector[ITEMS.indexOf(e)] == 1).collect(Collectors.toList());
+	}
+	
 
-		return list.stream().filter(e -> vector[list.indexOf(e)] == 1).collect(Collectors.toList());
+	private List<Item> extractItemsString(String binary, List<Item> list) {
+
+		return list.stream().filter(e -> Character.getNumericValue(binary.charAt(list.indexOf(e))) == 1)
+				.collect(Collectors.toList());
 	}
 
 	private int getSumOfValues(List<Item> list) {
@@ -89,9 +101,9 @@ public class Bruteforce {
 		return list.stream().mapToInt(e -> e.weight).sum();
 	}
 
-	private boolean doesntExceedCapacityItems(int capacity, List<Item> list) {
+	private boolean doesntExceedCapacityItems(List<Item> list) {
 
-		return getSumOfWeights(list) <= capacity;
+		return getSumOfWeights(list) <= KNAPSACKSIZE;
 	}
 
 	private int getMaxSum(Collection<Integer> collection) {
