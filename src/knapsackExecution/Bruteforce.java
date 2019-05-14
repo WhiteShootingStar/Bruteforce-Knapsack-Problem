@@ -29,24 +29,28 @@ public class Bruteforce {
 			long start = System.currentTimeMillis();
 			vector = new int[arSize];
 			List<Item> solution = null;
-
+			List<Item>	currentItems=null;
 			int bestSum = -1;
 			for (int i = 0; i < Math.pow(2, ITEMS.size()); ++i) {
 				int[] characteristicVector = getCharVector(i);
-				List<Item> currentItems = extractItems(characteristicVector);
-				// String characteristicVector = getCharVectorNEW(i);
-				// List<Item> currentItems = extractItemsString(characteristicVector, ITEMS);
-				if (solution == null && doesntExceedCapacityItems(currentItems)) {
-					solution = extractItems(characteristicVector);
-					bestSum = getSumOfValues(solution);
-				} else if (doesntExceedCapacityItems(currentItems)) {
+				if (bestSum == -1) {
+				currentItems = extractItems(characteristicVector);
+					// String characteristicVector = getCharVectorNEW(i);
+					// List<Item> currentItems = extractItemsString(characteristicVector, ITEMS);
+					if (solution == null && doesntExceedCapacityItems(currentItems)) {
+						solution = extractItems(characteristicVector);
+						bestSum = getSumOfValues(solution);
+					}
+				} else if (doesntExccedInt(characteristicVector, bestSum)) {
 					// solution = extractItems(characteristicVector);
 					// bestSum = getSumOfValues(solution);
-					int sum = getSumOfValues(currentItems);
-					if (sum > bestSum) {
-						solution = currentItems;
-						bestSum = sum;
-					}
+					solution = extractItems(characteristicVector);
+					bestSum = getSumOfValues(solution);
+					
+					// if (sum > bestSum) {
+					// solution = currentItems;
+					// bestSum = sum;
+					// }
 
 				}
 				// System.out.println(i);
@@ -72,9 +76,9 @@ public class Bruteforce {
 		// vector[j] = number % 2;
 		// number = number / 2;
 		// }
-		int index = 0;
+		int index = vector.length-1;
 		while (number > 0) {
-			vector[index++] = number % 2;
+			vector[index--] = number % 2;
 			number = number / 2;
 		}
 		return vector;
@@ -134,6 +138,19 @@ public class Bruteforce {
 	private boolean doesntExceedCapacityItems(List<Item> list) {
 
 		return getSumOfWeights(list) <= KNAPSACKSIZE;
+	}
+
+	private boolean doesntExccedInt(int[] vector, int bestSum) {
+		int weight = 0;
+		int value = 0;
+		for (int i = 0; i < vector.length; i++) {
+			if(vector[i]==1) {
+				weight += ITEMS.get(i).weight;
+				value += ITEMS.get(i).value;
+			}
+			
+		}
+		return weight <= KNAPSACKSIZE && value >= bestSum;
 	}
 
 	private int getMaxSum(Collection<Integer> collection) {
